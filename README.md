@@ -29,7 +29,7 @@ Eine unabhängige, privat entwickelte Android-App von **RicoReWi** – kein offi
   <tr>
     <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-40-740_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-40-740_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 10" width="220"></a><br><sub>Screenshot 10</sub></td>
     <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-43-387_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-43-387_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 11" width="220"></a><br><sub>Screenshot 11</sub></td>
-    <td></td>
+    <td align="center" width="33%"><a href="play_protect_dialog.webp"><img src="play_protect_dialog.webp" alt="Screenshot 12: Google Play Protect meldet nach der Prüfung, dass die laut.fm Manager APK anscheinend sicher ist" width="220"></a><br><sub>Play-Protect-Prüfung</sub></td>
   </tr>
 </table>
 
@@ -55,6 +55,14 @@ Die veröffentlichte Version **1.0.1** ist eine intern signierte APK, die **nich
 - Nach der Installation sollte diese Berechtigung wieder deaktiviert werden.
 - Bei einem von anderen Personen selbst gebauten APK können **abweichende Signaturen** vorliegen. Updates sind dann nicht unbedingt ohne vorherige Deinstallation möglich.
 - Installation und Nutzung auf eigene Verantwortung.
+
+**Beispiel der Play-Protect-Prüfung bei der Installation:**
+
+<p align="center">
+  <a href="play_protect_dialog.webp"><img src="play_protect_dialog.webp" alt="Play Protect – laut.fm Manager wurde auf einem Android-Gerät als anscheinend sicher eingestuft" width="350"></a>
+</p>
+
+<sub>Der Screenshot zeigt eine erfolgreiche Play-Protect-Prüfung auf einem einzelnen Android-Gerät. Das ist keine allgemeine Sicherheitsgarantie und ersetzt keine eigene Prüfung der Datei.</sub>
 
 ## 🎛️ Funktionsumfang
 
