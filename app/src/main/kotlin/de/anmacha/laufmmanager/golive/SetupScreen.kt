@@ -1,0 +1,207 @@
+// GO LIVE Sender: laut.fm-Anbindung (Anmelden, Station wählen, Zugangsdaten automatisch). Gesendet wird nur an laut.fm.
+package de.anmacha.laufmmanager.golive
+
+import android.annotation.SuppressLint
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import de.anmacha.laufmmanager.engine.android.EngineHub
+import de.anmacha.laufmmanager.live.LautFmClient
+import de.anmacha.laufmmanager.ui.theme.*
+
+@Composable
+fun SetupScreen(vm: GoLiveViewModel) {
+    val ui by vm.ui.collectAsState()
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        LautFmPanel(ui, vm)
+        EncoderPanel(ui)
+    }
+}
+
+@Composable
+private fun LautFmPanel(ui: GoLiveUiState, vm: GoLiveViewModel) {
+    val l = ui.lautfm
+    var pasteOpen by remember { mutableStateOf(false) }
+    var pasted by remember { mutableStateOf("") }
+    Panel(title = "laut.fm") {
+        if (l.account == null) {
+            Note("Melde dich bei laut.fm an. Danach werden deine Stationen und die Sende-Zugangsdaten automatisch übernommen.")
+            LautFmSignIn(l.busy, vm::openLautFmLogin, vm::beginBrowserLogin)
+            TextButton(onClick = { pasteOpen = !pasteOpen }) { Text("Stattdessen Token einfügen") }
+            if (pasteOpen) {
+                val uri = androidx.compose.ui.platform.LocalUriHandler.current
+                Note("Token im Browser erzeugen, kopieren und hier einfügen.")
+                OutlinedButton(onClick = { uri.openUri("https://radioadmin.laut.fm/login?callback_url=airdeck") }, modifier = Modifier.fillMaxWidth()) { Text("Token-Seite im Browser öffnen") }
+                OutlinedTextField(value = pasted, onValueChange = { pasted = it }, label = { Text("Radioadmin-Token") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Button(onClick = { vm.connectLautFm(pasted); pasted = "" }, enabled = pasted.isNotBlank() && !l.busy, modifier = Modifier.fillMaxWidth()) { Text("Prüfen und verbinden") }
+            }
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.CheckCircle, null, tint = BrandGood)
+                Spacer(Modifier.width(8.dp))
+                Text("Verbunden", color = BrandText, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                if (l.busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                TextButton(onClick = vm::disconnectLautFm) { Text("Trennen") }
+            }
+            if (l.stations.isEmpty()) Note("Stationen werden geladen …")
+            l.stations.forEach { s ->
+                val selected = s.id == l.account.stationId
+                Surface(
+                    onClick = { vm.selectLautFmStation(s) },
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                    color = if (selected) BrandBlue.copy(alpha = 0.16f) else BrandPanelSolid,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, if (selected) BrandBlue else BrandLine),
+                    enabled = !ui.running,
+                ) {
+                    Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Radio, null, tint = if (selected) BrandBlue else BrandMuted)
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(s.displayName, color = BrandText, fontWeight = FontWeight.Bold)
+                            Text("laut.fm/${s.name}", fontSize = 12.sp, color = BrandMuted)
+                        }
+                        if (selected) Icon(Icons.Filled.Check, null, tint = BrandBlue)
+                    }
+                }
+            }
+            if (ui.running) Note("Während der Sendung kann die Station nicht gewechselt werden.")
+            else if (l.account.stationId > 0) Note("Zugangsdaten übernommen. Unter „Live“ auf „Sender starten“ tippen.")
+        }
+        l.message?.let { Note(it, bad = it.contains("nicht") || it.contains("abgelaufen") || it.contains("Keine")) }
+    }
+}
+
+/** Sendeziel: ausschließlich die gewählte laut.fm-Station. Server, Mountpoint und Passwort holt die App selbst von laut.fm. */
+@Composable
+private fun EncoderPanel(ui: GoLiveUiState) {
+    val cfg = ui.config
+    val station = ui.lautfm.account?.takeIf { it.stationId > 0 }
+    Panel(title = "Sendeziel") {
+        if (station != null) {
+            Note("laut.fm · ${station.stationName}")
+            if (cfg != null && cfg.host.isNotBlank()) Note("${cfg.bitrate} kbit/s MP3 – Zugangsdaten werden vor jedem Start von laut.fm geholt.")
+        } else Note("Wähle oben deine laut.fm-Station. Gesendet wird nur an laut.fm; eigene Server sind in dieser App nicht vorgesehen.")
+    }
+}
+
+/**
+ * laut.fm-Anmeldung als eigener Bildschirm (kein Dialog: dort funktioniert die Tastatur in der WebView nicht
+ * zuverlässig). Das Token wird entweder aus der Rückleit-Adresse oder aus dem angezeigten Seitentext gelesen.
+ */
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun LautFmLoginScreen(onToken: (String) -> Unit, onClose: () -> Unit) {
+    var hint by remember { mutableStateOf("Melde dich bei laut.fm an …") }
+    var web by remember { mutableStateOf<WebView?>(null) }
+    var done by remember { mutableStateOf(false) }
+    var loadFailed by remember { mutableStateOf(false) }
+    androidx.activity.compose.BackHandler {
+        val w = web
+        if (w != null && w.canGoBack()) w.goBack() else onClose()
+    }
+    Column(Modifier.fillMaxSize().background(BrandBg).systemBarsPadding().imePadding()) {
+        Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onClose) { Icon(Icons.Filled.Close, "Schließen") }
+            Column {
+                Text("Bei laut.fm anmelden", fontWeight = FontWeight.Bold, color = BrandText)
+                Text(hint, fontSize = 12.sp, color = BrandMuted)
+            }
+        }
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { c ->
+                WebView(c).apply {
+                    // Autofill/Formular-Speicher aus: sonst springt der Cursor bei manchen Tastaturen nach jedem Zeichen nach vorn
+                    importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+                    @Suppress("DEPRECATION")
+                    settings.saveFormData = false
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+                    val take = { token: String? ->
+                        if (token != null && !done) {
+                            done = true
+                            hint = "Angemeldet – prüfe Zugang …"
+                            onToken(token)
+                        }
+                        token != null
+                    }
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
+                            take(LautFmClient.tokenFromRedirect(request.url.toString()))
+
+                        override fun onPageStarted(view: WebView, url: String, favicon: android.graphics.Bitmap?) {
+                            loadFailed = false
+                            if (take(LautFmClient.tokenFromRedirect(url))) view.stopLoading()
+                        }
+
+                        override fun onPageFinished(view: WebView, url: String) {
+                            if (!loadFailed) hint = "Melde dich bei laut.fm an …"
+                            // Zeigt laut.fm das Token nach dem Login nur als Text an, lesen wir es von der Seite
+                            val path = runCatching { android.net.Uri.parse(url).path }.getOrNull() ?: ""
+                            if (url.contains("radioadmin.laut.fm") && path != "/login" && path != "/") {
+                                view.evaluateJavascript("(function(){return document.body?document.body.innerText:''})()") { js ->
+                                    val text = runCatching { org.json.JSONTokener(js).nextValue() as? String }.getOrNull() ?: ""
+                                    take(LautFmClient.tokenFromPageText(text))
+                                }
+                            }
+                        }
+
+                        override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
+                            if (request.isForMainFrame && LautFmClient.tokenFromRedirect(request.url.toString()) == null) {
+                                loadFailed = true
+                                hint = "Seite nicht erreichbar – Internetverbindung prüfen"
+                            }
+                        }
+                    }
+                    web = this
+                    // erst nach dem Löschen alter Cookies laden, sonst kann das Löschen die neue Anmeldung treffen
+                    android.webkit.CookieManager.getInstance().removeAllCookies { loadUrl(LautFmClient.loginUrl()) }
+                }
+            },
+            onRelease = { it.destroy(); web = null },
+        )
+    }
+}
+
+
+/**
+ * Anmeldung bei laut.fm. Standard ist die Anmeldung in der App: das Token verlässt die App nie. Alternativ im Browser
+ * (Tastatur, Passwortmanager und Autofill wie gewohnt); laut.fm leitet dann über die App-Adresse `laufmmanager://lautfm` zurück.
+ * Eine App-Adresse kann Android nicht an eine App binden, daher der Hinweis und die ausdrückliche Wahl.
+ */
+@Composable
+fun LautFmSignIn(busy: Boolean, onWebView: () -> Unit, onBrowserStarted: () -> Unit = {}) {
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    var launched by remember { mutableStateOf(false) }
+    Button(onClick = onWebView, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+        if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+        else { Icon(Icons.Filled.Login, null); Spacer(Modifier.width(8.dp)); Text("In der App bei laut.fm anmelden") }
+    }
+    OutlinedButton(
+        onClick = {
+            launched = runCatching {
+                ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(LautFmClient.loginUrl())).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+            }.isSuccess
+            if (launched) onBrowserStarted()
+        },
+        enabled = !busy, modifier = Modifier.fillMaxWidth(),
+    ) { Text("Im Browser anmelden (Tastatur, Passwortmanager)") }
+    if (launched && !busy) Note("Nach der Anmeldung kehrt der Browser automatisch zur App zurück.")
+    Note("Browser-Anmeldung: Der Rückweg läuft über eine App-Adresse, die Android nicht an diese App binden kann. Nutze sie nur, wenn du keine unbekannten Apps installiert hast.")
+}

@@ -1,0 +1,11 @@
+local.properties
+build/
+.gradle/
+*.iml
+# Private Signing-Keys und Passwörter niemals veröffentlichen
+signing/
+*.jks
+*.p12
+*.keystore
+# Lokal gebaute, signierte APKs nicht unbeabsichtigt committen
+dist/*.apk

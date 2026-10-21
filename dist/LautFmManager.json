@@ -1,0 +1,11 @@
+{
+ "version":"1.0.1",
+ "version_code":2,
+ "package":"de.anmacha.laufmmanager",
+ "min_android":"8.0",
+ "size_bytes":13272213,
+ "sha256":"a8c5d020428888a7b110d067b894c455e9de44598f3e3f88290f2573495ae958",
+ "signing":"intern",
+ "built_at":"2026-10-04T21:44:22Z",
+ "abi":"universal"
+}
