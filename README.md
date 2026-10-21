@@ -6,6 +6,33 @@ Eine unabhängige, privat entwickelte Android-App von **RicoReWi** – kein offi
 
 > **Projektstatus:** Version **1.0.1** · Android **8.0+** · intern signierte **Developer APK** · **Experiment / eingestellt**. Von mir sind keine weiteren Updates geplant. Die Community darf den Quellcode übernehmen und unabhängig weiterentwickeln.
 
+## 📱 Screenshots – so sieht die App aus
+
+**Einblicke in den laut.fm Manager für Android.** Tippe auf ein Vorschaubild, um den jeweiligen Screenshot in Originalgröße auf GitHub zu öffnen.
+
+<table>
+  <tr>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-29-19-596_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-29-19-596_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 01" width="220"></a><br><sub>Screenshot 01</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-29-22-603_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-29-22-603_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 02" width="220"></a><br><sub>Screenshot 02</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-29-28-027_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-29-28-027_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 03" width="220"></a><br><sub>Screenshot 03</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-30-05-263_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-30-05-263_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 04" width="220"></a><br><sub>Screenshot 04</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-30-43-835_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-30-43-835_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 05" width="220"></a><br><sub>Screenshot 05</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-31-21-245_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-31-21-245_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 06" width="220"></a><br><sub>Screenshot 06</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-31-46-751_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-31-46-751_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 07" width="220"></a><br><sub>Screenshot 07</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-20-655_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-20-655_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 08" width="220"></a><br><sub>Screenshot 08</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-23-742_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-23-742_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 09" width="220"></a><br><sub>Screenshot 09</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-40-740_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-40-740_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 10" width="220"></a><br><sub>Screenshot 10</sub></td>
+    <td align="center" width="33%"><a href="Screenshot_2026-10-21-06-32-43-387_de.anmacha.laufmmanager.jpg"><img src="Screenshot_2026-10-21-06-32-43-387_de.anmacha.laufmmanager.jpg" alt="laut.fm Manager Android – Screenshot 11" width="220"></a><br><sub>Screenshot 11</sub></td>
+    <td></td>
+  </tr>
+</table>
+
 ## 📥 APK herunterladen
 
 ### ➡️ [laut.fm Manager 1.0.1 – APK direkt von GitHub herunterladen](https://github.com/ricorewioriginal-collab/laut-fm-manager-android/raw/refs/heads/main/LautFmManager.apk)
