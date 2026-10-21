@@ -8,9 +8,9 @@ Eine unabhängige, privat entwickelte Android-App von **RicoReWi** – kein offi
 
 ## 📥 APK herunterladen
 
-### ➡️ [laut.fm Manager für Android herunterladen](https://ricorewi-radio.de/download-lautfm-manager.php)
+### ➡️ [laut.fm Manager 1.0.1 – APK direkt von GitHub herunterladen](https://github.com/ricorewioriginal-collab/laut-fm-manager-android/raw/refs/heads/main/LautFmManager.apk)
 
-Die veröffentlichte Version **1.0.1** ist eine intern signierte APK, die **nicht über den Google Play Store** verteilt wird. Der Download liegt auf meiner Webseite.
+Die veröffentlichte Version **1.0.1** ist eine intern signierte APK, die **nicht über den Google Play Store** verteilt wird. Der **APK-Download erfolgt ausschließlich über GitHub**. Die signierte Originaldatei liegt als [`LautFmManager.apk`](LautFmManager.apk) direkt in diesem Repository.
 
 | Information | Wert |
 |---|---|
@@ -75,7 +75,8 @@ Der Build erstellt bei Bedarf einen **eigenen lokalen Signierschlüssel** unter 
 - `gradle/`, `gradlew` – Build-Tooling
 - `build-apk.sh` – Build-/Signierskript
 - `create-signing-key.sh` – erzeugt einen **neuen** lokalen Schlüssel
-- `dist/LautFmManager.json` – Metadaten des veröffentlichten Builds (die APK selbst wird über den externen Downloadlink angeboten)
+- [`LautFmManager.apk`](LautFmManager.apk) – signierte Original-APK der Version 1.0.1, direkt auf GitHub herunterladbar
+- `dist/LautFmManager.json` – Metadaten des veröffentlichten Builds
 
 ## ❤️ Erlaubnis zur Weiterentwicklung
 
